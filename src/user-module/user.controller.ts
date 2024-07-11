@@ -7,6 +7,7 @@ import {
   Delete,
   Param,
   Body,
+  HttpCode,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
@@ -16,7 +17,6 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
-  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -26,40 +26,37 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @ApiOperation({ description: 'Create a user' })
-  @ApiCreatedResponse()
+  @HttpCode(201)
+  @ApiCreatedResponse({ description: 'Create a user' })
   async create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
     return this.userService.create(createUserDto);
   }
 
   @Put(':id')
-  @ApiOperation({ description: 'Update a user' })
-  @ApiAcceptedResponse()
-  async update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<IUser> {
+  @HttpCode(202)
+  @ApiAcceptedResponse({ description: 'Update a user' })
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     updateUserDto.id = id;
-    return this.userService.update(updateUserDto);
+    this.userService.update(updateUserDto);
   }
 
   @Get()
-  @ApiOperation({ description: 'Get all users' })
-  @ApiOkResponse()
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Get all users' })
   async getUsers(): Promise<IUser[]> {
     return this.userService.getUsers();
   }
 
   @Get(':id')
-  @ApiOperation({ description: 'Query user by Id' })
-  @ApiOkResponse()
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Query user by Id' })
   async getUser(@Param('id') id: string): Promise<IUser> {
     return this.userService.getUser(id);
   }
 
   @Delete(':id')
-  @ApiOperation({ description: 'Delete user by Id' })
-  @ApiNoContentResponse()
+  @HttpCode(204)
+  @ApiNoContentResponse({ description: 'Delete user by Id' })
   async deleteUser(@Param('id') id: string): Promise<IUser> {
     return this.userService.deleteUser(id);
   }
